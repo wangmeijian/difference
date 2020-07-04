@@ -1,10 +1,5 @@
-const ACTION = {
-  ADD: "ADD",
-  REMOVE: "REMOVE",
-  UPDATE: "UPDATE",
-};
 /**
- *
+ * 获取新增、修改的数据
  * @param {object} newData 修改后的数据
  * @param {object} oldData 修改前的数据
  * @param {object} dictionaries 字典描述
@@ -26,13 +21,14 @@ function modify(newData = {}, oldData = {}, dictionaries = {}, path = []) {
       diff.push(...modify(newVal, oldVal, dictionaries, [...path, key]));
     } else if (newVal !== oldVal) {
       const action = typeof oldVal === "undefined" ? "ADD" : "UPDATE";
+      const { desc, enumerable } = createPathDesc(dictionaries, [...path, key]);
 
       diff.push({
         path: [...path, key],
-        path_desc: createPathDesc(dictionaries, [...path, key]),
-        action: ACTION[action],
-        modify_from: action === "ADD" ? "" : oldVal,
-        modify_to: newVal,
+        path_desc: desc,
+        action,
+        modify_from: action === "ADD" ? "" : enum2Text(enumerable, oldVal),
+        modify_to: enum2Text(enumerable, newVal),
       });
       delete oldData[key];
     } else if (newVal === oldVal) {
@@ -42,6 +38,38 @@ function modify(newData = {}, oldData = {}, dictionaries = {}, path = []) {
   return diff;
 }
 
+/**
+ * 获取删除的数据
+ * @param {object} newData 修改后的数据
+ * @param {object} oldData 修改前的数据
+ * @param {object} dictionaries 字典描述
+ * @param {array} path 字典完整路径
+ * @returns {array}
+ */
+function remove(newData = {}, oldData = {}, dictionaries = {}, path = []) {
+  const diff = [];
+  for (const key in oldData) {
+    if (typeof oldData[key] === "object") {
+      diff.push(...remove({}, oldData[key], dictionaries, [...path, key]));
+    } else {
+      const { desc, enumerable } = createPathDesc(dictionaries, [...path, key]);
+      diff.push({
+        path: [...path, key],
+        path_desc: desc,
+        action: "REMOVE",
+        modify_from: enum2Text(enumerable, oldData[key]),
+        modify_to: "",
+      });
+    }
+  }
+  return diff;
+}
+/**
+ * 生成操作路径
+ * @param {object} dictionaries
+ * @param {array[string]} path
+ * @returns {array[string]}
+ */
 function createPathDesc(dictionaries = {}, path = []) {
   if (Object.keys(dictionaries).length === 0 || path.length === 0) return "";
   let desc = [];
@@ -51,42 +79,24 @@ function createPathDesc(dictionaries = {}, path = []) {
     if (dict._array) {
       dict = dict._array;
     } else {
-      dict = dict[path[i]];
+      dict = dict[path[i]] || {};
     }
     if (dict && dict.label) {
       desc.push(dict.label);
     }
   }
-  return desc.join("/");
+  return {
+    desc,
+    enumerable: dict._enum || null,
+  };
 }
 /**
- *
- * @param {object} newData 修改后的数据
- * @param {object} oldData 修改前的数据
- * @param {object} dictionaries 字典描述
- * @param {array} path 字典完整路径
- * @returns {array}
+ * 枚举数据转换为文本
+ * @param {object} enums
+ * @param {string|number|boolean} value
  */
-function remove(newData = {}, oldData = {}, dictionaries = {}, path = []) {
-  const diff = [];
-  for (const field in oldData) {
-    if (typeof newData[field] === "undefined") {
-      if (typeof oldData[field] === "object") {
-        diff.push(
-          ...remove({}, oldData[field], dictionaries, [...path, field])
-        );
-      } else {
-        diff.push({
-          path: [...path, field],
-          path_desc: createPathDesc(dictionaries, [...path, field]),
-          action: ACTION.REMOVE,
-          modify_from: oldData[field],
-          modify_to: "",
-        });
-      }
-    }
-  }
-  return diff;
+function enum2Text(enumerable = {}, value) {
+  return enumerable && enumerable[value] ? enumerable[value] : value;
 }
 
 const difference = (
