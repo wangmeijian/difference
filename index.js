@@ -1,9 +1,8 @@
-const actionDesc = {
-  add: "新增",
-  update: "更新",
-  delete: "删除",
+const ACTION = {
+  ADD: "ADD",
+  REMOVE: "REMOVE",
+  UPDATE: "UPDATE",
 };
-
 /**
  *
  * @param {object} newData 修改后的数据
@@ -16,34 +15,50 @@ function modify(newData = {}, oldData = {}, dictionaries = {}, path = []) {
   const diff = [];
 
   for (const key in newData) {
-    const newDataItem = newData[key];
-    const oldDataItem = oldData[key];
+    const newVal = newData[key];
+    const oldVal = oldData[key];
     if (
-      typeof newDataItem === "object" &&
-      typeof oldDataItem === "object" &&
-      newDataItem &&
-      oldDataItem
+      typeof newVal === "object" &&
+      typeof oldVal === "object" &&
+      newVal &&
+      oldVal
     ) {
-      diff.push(
-        ...modify(newDataItem, oldDataItem, dictionaries[key], [...path, key])
-      );
-    } else if (newDataItem !== oldDataItem) {
-      const action = typeof oldDataItem === "undefined" ? "add" : "update";
+      diff.push(...modify(newVal, oldVal, dictionaries, [...path, key]));
+    } else if (newVal !== oldVal) {
+      const action = typeof oldVal === "undefined" ? "ADD" : "UPDATE";
 
       diff.push({
         path: [...path, key],
-        action: actionDesc[action],
-        modify_from: action === "add" ? "" : oldDataItem,
-        modify_to: newDataItem,
+        path_desc: createPathDesc(dictionaries, [...path, key]),
+        action: ACTION[action],
+        modify_from: action === "ADD" ? "" : oldVal,
+        modify_to: newVal,
       });
       delete oldData[key];
-    } else if (newDataItem === oldDataItem) {
+    } else if (newVal === oldVal) {
       delete oldData[key];
     }
   }
   return diff;
 }
 
+function createPathDesc(dictionaries = {}, path = []) {
+  if (Object.keys(dictionaries).length === 0 || path.length === 0) return "";
+  let desc = [];
+  let dict = dictionaries;
+
+  for (let i = 0; i < path.length; i++) {
+    if (dict._array) {
+      dict = dict._array;
+    } else {
+      dict = dict[path[i]];
+    }
+    if (dict && dict.label) {
+      desc.push(dict.label);
+    }
+  }
+  return desc.join("/");
+}
 /**
  *
  * @param {object} newData 修改后的数据
@@ -57,13 +72,16 @@ function remove(newData = {}, oldData = {}, dictionaries = {}, path = []) {
   for (const field in oldData) {
     if (typeof newData[field] === "undefined") {
       if (typeof oldData[field] === "object") {
-        diff.push(...remove({}, oldData[field], dictionaries[field], [field]));
+        diff.push(
+          ...remove({}, oldData[field], dictionaries, [...path, field])
+        );
       } else {
         diff.push({
           path: [...path, field],
-          action: actionDesc.delete,
+          path_desc: createPathDesc(dictionaries, [...path, field]),
+          action: ACTION.REMOVE,
           modify_from: oldData[field],
-          modify_to: "空",
+          modify_to: "",
         });
       }
     }
