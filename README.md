@@ -8,8 +8,16 @@ import difference from './difference'
 // 数据修改前  
 let before = {
   name: 'wang',
+  // 枚举数据
   sex: 1,
+  // 元素为基本数据类型的数组
   skill: ['javascript', 'html', 'css'],
+  // 元素为对象的数组
+  stock: [{
+    apple: 100
+  },{
+    google: 200
+  }],
   asset: {
     house: 5,
     car: 6,
@@ -22,6 +30,11 @@ let after = {
   name: 'wang',
   sex: 2,
   skill: ['javascript', 'html', 'vue', 'react'],
+  stock: [{
+    apple: 100
+  },{
+    google: 200
+  }],
   asset: {
     house: 10,
     car: 6,
@@ -81,11 +94,9 @@ let dict = {
       2: '女'
     }
   },
-  // 元素为基本数据类型的数组
   skill: {
     _label: '技能'
   },
-  // 元素为对象的数组
   stock: {
     _label: '股票',
     apple: {
