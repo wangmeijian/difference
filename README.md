@@ -135,8 +135,8 @@ const diff = difference(after, before, dict);
 | UPDATE | 性别 | 男 | 女 |
 | UPDATE | 技能 | css | vue |
 | ADD | 技能 |  | react |
-| UPDATE | 资产/房子 | 5 | 10 |
 | UPDATE | 股票/苹果 | 100 | 500 |
+| UPDATE | 资产/房子 | 5 | 10 |
 | ADD | 	资产/猫 |  | 2 |
 | ADD | 工作 |  | null |
 | REMOVE | 	资产/狗 | 1 |  |

@@ -21,27 +21,15 @@ function modify(newData = {}, oldData = {}, dictionaries = {}, path = []) {
       diff.push(...modify(newVal, oldVal, dictionaries, [...path, key]));
     } else if (newVal !== oldVal) {
       const action = typeof oldVal === "undefined" ? "ADD" : "UPDATE";
+      const { desc, enumerable } = createPathDesc(dictionaries, [...path, key]);
 
-      if (newVal && typeof newVal === "object") {
-        diff.push(...modify(newVal, {}, dictionaries, [...path, key]));
-      } else {
-        console.log([...path, key]);
-        const { desc, enumerable } = createPathDesc(dictionaries, [
-          ...path,
-          key,
-        ]);
-
-        diff.push({
-          path: [...path, key],
-          path_desc: desc,
-          action,
-          modify_from: action === "ADD" ? "" : enum2Text(enumerable, oldVal),
-          modify_to: enum2Text(enumerable, newVal),
-        });
-        delete oldData[key];
-      }
-    } else if (newVal === oldVal) {
-      delete oldData[key];
+      diff.push({
+        path: [...path, key],
+        path_desc: desc,
+        action,
+        modify_from: action === "ADD" ? "" : enum2Text(enumerable, oldVal),
+        modify_to: enum2Text(enumerable, newVal),
+      });
     }
   }
   return diff;
@@ -58,9 +46,7 @@ function modify(newData = {}, oldData = {}, dictionaries = {}, path = []) {
 function remove(newData = {}, oldData = {}, dictionaries = {}, path = []) {
   const diff = [];
   for (const key in oldData) {
-    if (typeof oldData[key] === "object") {
-      diff.push(...remove({}, oldData[key], dictionaries, [...path, key]));
-    } else {
+    if (typeof newData[key] === "undefined") {
       const { desc, enumerable } = createPathDesc(dictionaries, [...path, key]);
       diff.push({
         path: [...path, key],
@@ -69,6 +55,13 @@ function remove(newData = {}, oldData = {}, dictionaries = {}, path = []) {
         modify_from: enum2Text(enumerable, oldData[key]),
         modify_to: "",
       });
+    } else if (
+      typeof oldData[key] === "object" &&
+      typeof newData[key] === "object"
+    ) {
+      diff.push(
+        ...remove(newData[key], oldData[key], dictionaries, [...path, key])
+      );
     }
   }
   return diff;
