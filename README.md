@@ -67,13 +67,13 @@ const diff = difference(after, before);
 | 操作 | 字段路径 | 修改前 | 修改后 | 解释
 | -- | -- | -- | -- | -- |
 | UPDATE | sex | 1 | 2 | sex从1更新为2
-| UPDATE | skill/2 | css | vue | skill索引为2的元素从css更新为vue
-| ADD | skill/3 |  | react | skill字段新增了react
-| UPDATE | stock/0/apple | 100 | 500 | apple股票从100更新为500
-| UPDATE | asset/house | 5 | 10 | 资产-房子从5套更新为10套
-| ADD | asset/cat |  | 2 | 资产-新增2只猫
-| ADD | job |  | null | 新增job字段值为空
-| REMOVE | asset/dog | 1 |  | 删除了字段：资产-狗
+| UPDATE | skill/2 | css | vue | skill[2]从css更新为vue
+| ADD | skill/3 |  | react | 新增skill[3]，值为react
+| UPDATE | stock/0/apple | 100 | 500 | stock[0].apple从100更新为500
+| UPDATE | asset/house | 5 | 10 | asset.house从5更新为10
+| ADD | asset/cat |  | 2 | 新增字段asset.cat，值为2
+| ADD | job |  | null | 新增job字段值为null
+| REMOVE | asset/dog | 1 |  | 删除了字段：asset.dog
 
 配合字典增强可读性
 
