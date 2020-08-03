@@ -64,16 +64,16 @@ const diff = difference(after, before);
 
 结果用表格展示如下：
 
-| 操作 | 字段路径 | 修改前 | 修改后 |
-| -- | -- | -- | -- |
-| UPDATE | sex | 1 | 2 |
-| UPDATE | skill/2 | css | vue |
-| ADD | skill/3 |  | react |
-| UPDATE | stock/0/apple | 100 | 500 |
-| UPDATE | asset/house | 5 | 10 |
-| ADD | asset/cat |  | 2 |
-| ADD | job |  | null |
-| REMOVE | asset/dog | 1 |  |
+| 操作 | 字段路径 | 修改前 | 修改后 | 解释
+| -- | -- | -- | -- | -- |
+| UPDATE | sex | 1 | 2 | sex从1更新为2
+| UPDATE | skill/2 | css | vue | skill索引为2的元素从css更新为vue
+| ADD | skill/3 |  | react | skill字段新增了react
+| UPDATE | stock/0/apple | 100 | 500 | apple股票从100更新为500
+| UPDATE | asset/house | 5 | 10 | 资产-房子从5套更新为10套
+| ADD | asset/cat |  | 2 | 资产-新增2只猫
+| ADD | job |  | null | 新增job字段值为空
+| REMOVE | asset/dog | 1 |  | 删除了字段：资产-狗
 
 配合字典增强可读性
 
@@ -130,14 +130,14 @@ const diff = difference(after, before, dict);
 ```
 输出结果为数组，用表格展示如下：
 
-| 操作 | 字段描述 | 修改前 | 修改后 |
-| -- | -- | -- | -- |
-| UPDATE | 性别 | 男 | 女 |
-| UPDATE | 技能 | css | vue |
-| ADD | 技能 |  | react |
-| UPDATE | 股票/苹果 | 100 | 500 |
-| UPDATE | 资产/房子 | 5 | 10 |
-| ADD | 	资产/猫 |  | 2 |
-| ADD | 工作 |  | null |
-| REMOVE | 	资产/狗 | 1 |  |
+| 操作 | 字段描述 | 修改前 | 修改后 | 解释
+| -- | -- | -- | -- | -- | 
+| UPDATE | 性别 | 男 | 女 | 性别从男更新为女
+| UPDATE | 技能 | css | vue | 技能从css更新为vue
+| ADD | 技能 |  | react | 新增了技能：react
+| UPDATE | 股票/苹果 | 100 | 500 | 苹果股票从100更新为500
+| UPDATE | 资产/房子 | 5 | 10 | 房子从5套更新为10套
+| ADD | 	资产/猫 |  | 2 | 新增了字段猫：值为2
+| ADD | 工作 |  | null | 新增了工作字段，值为空
+| REMOVE | 	资产/狗 | 1 |  | 删除了字段：狗
 
